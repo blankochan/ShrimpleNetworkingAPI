@@ -14,8 +14,11 @@ public static class PhotonController_OnPhotonEventReceived_Patch
         {
             void removeRoom(string name)
             {
-                __instance.availableRooms.Remove(__instance.availableRooms.ToArray().First(room => room.name == name));
-                __instance.PushSimpleEvent(PhotonControllerEventType.RoomsUpdated);
+                if (__instance.availableRooms.ToArray().Any(room => room.name == name))
+                {
+                    __instance.availableRooms.Remove(__instance.availableRooms.ToArray().First(room => room.name == name));
+                    __instance.PushSimpleEvent(PhotonControllerEventType.RoomsUpdated);
+                }
             }
             PhotonHashtable rooms = __0[222].Cast<PhotonHashtable>();
             foreach (var room in rooms)

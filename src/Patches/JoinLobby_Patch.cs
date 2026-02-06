@@ -16,7 +16,7 @@ public static class JoinLobbyPatch
         MelonCoroutines.Start(joinLobbyCoroutine());
         void setLocalModList()
         {
-            __instance.LocalPlayer.CustomProperties.Add("ShrimpleNetworkingAPI_Mods", JsonConvert.SerializeObject(Registration.RegisteredMods));
+            __instance.LocalPlayer.CustomProperties.System_Collections_IDictionary_set_Item("ShrimpleNetworkingAPI_Mods", JsonConvert.SerializeObject(Registration.RegisteredMods));
         }
         IEnumerator joinLobbyCoroutine()
         {
