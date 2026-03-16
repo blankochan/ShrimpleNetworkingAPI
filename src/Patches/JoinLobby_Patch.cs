@@ -24,9 +24,17 @@ public static class JoinLobbyPatch
             while (iterationGuard >= 0)
             {
                 yield return new WaitForSeconds(1);
-                if (__instance.IsConnectedAndReady && __instance.IsConnected && __instance.CurrentLobby.IsDefault)
+                if (__instance.IsConnectedAndReady && __instance.IsConnected)
                 {
                     if (__instance.OpJoinLobby(new("Modded", LobbyType.Default)))
+                    {
+                        setLocalModList();
+                        break;
+                    }
+                }
+                if (__instance.CurrentLobby is TypedLobby currentLobby)
+                {
+                    if (!currentLobby.IsDefault)
                     {
                         setLocalModList();
                         break;
