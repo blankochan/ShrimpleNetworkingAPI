@@ -22,6 +22,7 @@ public static class RealtimeClient_ConnectUsingSettings_Patch
             PhotonHashtable localPersonalMods = new();
 
             localRootTable[Utils.HashTableKeys.InstalledMods] = localPersonalMods;
+            localRootTable[Utils.HashTableKeys.CustomProperties] = localCustomProperties;
 
             __instance.LocalPlayer.CustomProperties[Utils.HashTableKeys.ShrimpleRootNode] = localRootTable;
 
