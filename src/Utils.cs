@@ -4,19 +4,36 @@ using Il2CppPhoton.Realtime;
 using Il2CppPhoton.Client;
 namespace ShrimpleNetworkingAPI;
 
+
 public static class Utils
 {
-    public static bool TryGetRequiredModsForCurrentRoom(out Dictionary<string, Registration.NetworkingInfo> mods) =>
-      TryGetRequiredMods(PhotonController.instance.client.CurrentRoom, out mods);
-
-    public static bool TryGetMods(this PhotonHashtable table, string key, out Dictionary<string, Registration.NetworkingInfo> mods)
+    public static class HashTableKeys
     {
-        if (table.TryGetValue(key, out var Il2CppModListObject))
+        public const string ShrimpleRootNode = "ShrimpleNetworkingAPI";
+        public const string RequiredMods = "RequiredMods";
+        public const string InstalledMods = "InstalledMods";
+        public const string CustomProperties = "CustomProperties";
+    }
+
+
+    public static bool TryGetRequiredModsForCurrentRoom(out Dictionary<string, string> mods) =>
+      TryGetRequiredMods(PhotonController.instance.client.CurrentRoom.CustomProperties, out mods);
+
+
+    public static bool TryGetRequiredMods(this PhotonHashtable roomTable, out Dictionary<string, string> mods)
+    {
+        if (roomTable.TryGetValue(HashTableKeys.ShrimpleRootNode, out var table))
         {
-            var requiredMods = JsonConvert.DeserializeObject<Dictionary<string, Registration.NetworkingInfo>>(Il2CppModListObject.ToString());
-            if (requiredMods is not null)
+            if (table.Cast<PhotonHashtable>().TryGetValue(HashTableKeys.RequiredMods, out var il2cppModTable))
             {
-                mods = requiredMods;
+                Dictionary<string, string> modList = new();
+                foreach (var modkvp in il2cppModTable.Cast<PhotonHashtable>())
+                {
+                    string id = modkvp.Key.ToString();
+                    string version = modkvp.Value.ToString();
+                    modList.Add(id, version);
+                }
+                mods = modList;
                 return true;
             }
         }
@@ -25,17 +42,21 @@ public static class Utils
         return false;
     }
 
-    public static bool TryGetRequiredMods(this Room room, out Dictionary<string, Registration.NetworkingInfo> mods)
+    /// <remarks> <see langword="implicit"/>ly assumes that if <paramref name="rootTable"/> contains HashTableKeys.ShrimpleRootNode that you wanted the <paramref name="customProperties"/> for that root node </remarks>
+    public static bool TryGetCustomProperties(PhotonHashtable rootTable, out PhotonHashtable customProperties)
     {
-        if (TryGetMods(room.customProperties, "ShrimpleNetworkingAPI_RequiredMods", out mods))
-            return true;
+        if (rootTable.TryGetValue(HashTableKeys.ShrimpleRootNode, out var table))
+            rootTable = table.Cast<PhotonHashtable>();
 
-        mods = new();
+        if (rootTable.TryGetValue(Utils.HashTableKeys.CustomProperties, out var customTable))
+        {
+            customProperties = customTable.Cast<PhotonHashtable>();
+            return true;
+        }
+        customProperties = new();
         return false;
     }
-
-
-    public static bool IsAvailableInCurrentRoom(this Registration.NetworkingInfo info)
+    public static bool IsAvailableInCurrentRoom(this Registration.NetworkingMetadata info)
     {
         if (Utils.TryGetRequiredModsForCurrentRoom(out var mods))
             return mods.ContainsKey(info.Identifer);

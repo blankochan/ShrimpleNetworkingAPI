@@ -9,7 +9,7 @@ public class Main : MelonMod
 {
     public override void OnInitializeMelon()
     {
-        Registration.Register(new($"{BuildInfo.Author}.{BuildInfo.Name}", BuildInfo.Version, requiredForJoin: true, strictVersioning: false));
+        Registration.TryRegister($"{BuildInfo.Author}.{BuildInfo.Name}", BuildInfo.Version, requiredForJoin: true);
         LoggerInstance.Msg("loaded");
     }
 }

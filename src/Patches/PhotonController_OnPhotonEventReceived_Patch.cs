@@ -12,7 +12,7 @@ public static class PhotonController_OnPhotonEventReceived_Patch
     {
         if (__0.Code is 229)
         {
-            void removeRoom(string name)
+            void removeRoom(string name, string reason = "Unspecifed")
             {
                 if (__instance.availableRooms.ToArray().Any(room => room.name == name))
                 {
@@ -26,28 +26,30 @@ public static class PhotonController_OnPhotonEventReceived_Patch
                 string roomName = room.Key.ToString();
                 PhotonHashtable roomProperties = room.Value.Cast<PhotonHashtable>();
 
-                Dictionary<string, Registration.NetworkingInfo> remoteRoomRequiredMods = new();
-                if (!Utils.TryGetMods(roomProperties, key: "ShrimpleNetworkingAPI_RequiredMods", out remoteRoomRequiredMods))
-                    removeRoom(roomName);
-
-                foreach (var remoteModKvp in remoteRoomRequiredMods)
+                if (Utils.TryGetRequiredMods(roomProperties, out var remoteRoomRequiredMods))
                 {
-                    if (Registration.RegisteredMods.ContainsKey(remoteModKvp.Key))
+
+                    foreach (var remoteModKvp in remoteRoomRequiredMods)
                     {
-                        var localMod = Registration.RegisteredMods[remoteModKvp.Key];
-                        if (localMod.UseStrictVersioning)
-                            if (remoteModKvp.Value.Version != localMod.Version)
-                            {
-                                removeRoom(roomName);
-                                break;
-                            }
-                    }
-                    else
-                    {
-                        removeRoom(roomName);
-                        break;
+                        if (Registration.RegisteredMods.ContainsKey(remoteModKvp.Key))
+                        {
+                            var localMod = Registration.RegisteredMods[remoteModKvp.Key];
+                            if (localMod.UseStrictVersioning)
+                                if (remoteModKvp.Value != localMod.Version)
+                                {
+                                    removeRoom(roomName, $"Rejected because {remoteModKvp.Key} uses StrictVersioning");
+                                    break;
+                                }
+                        }
+                        else
+                        {
+                            removeRoom(roomName, $"Rejected because the local client does not have {remoteModKvp.Key}");
+                            break;
+                        }
                     }
                 }
+                else removeRoom(roomName, "Rejected because this room is missing a valid mod list");
+
             }
         }
     }
