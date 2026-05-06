@@ -1,3 +1,2 @@
 # 0.1.0
-* Test
-## Pre-alpha release
+First Beta release no changelog 
