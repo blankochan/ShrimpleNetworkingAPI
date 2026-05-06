@@ -10,14 +10,9 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v6
-      - name: Fetch Changelog
-        id: fetch_changelog
-        run: echo changelog=$(cat ${{github.workspace}}/CHANGELOG.md) >> $GITHUB_OUTPUT
-      - name: Process and Add Notes
+      - name: Add Changelog
         uses: blankochan/ShrimpleBuilder/format_release@master
-        with:
-          changelog: ${{steps.fetch_changelog.outputs.changelog}}
-          tag: ${{ github.event.release.tag_name }}
+
   build_and_upload:
     runs-on: ubuntu-latest
     permissions:
