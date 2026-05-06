@@ -12,7 +12,8 @@ jobs:
       - uses: actions/checkout@v6
       - name: Add Changelog
         uses: blankochan/ShrimpleBuilder/format_release@master
-
+        with:
+          tag: ${{ github.event.release.tag_name }}
   build_and_upload:
     runs-on: ubuntu-latest
     permissions:
