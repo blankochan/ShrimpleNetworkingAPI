@@ -1,4 +1,5 @@
 name: Build custom
+run-name: Build Custom [${{inputs.configuration}}] for [${{inputs.active_dependencies}}] ${{ inputs.constants != '' && format('[{0}]', inputs.constants) || '' }}
 on:
   workflow_dispatch:
     inputs:
