@@ -1,10 +1,9 @@
 name: Handle Release
-on:
-  release:
-    types: [prereleased]
+on: release
 
 jobs:
   format:
+    if: contains(github.event.release.body,'autoRelease')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -15,6 +14,7 @@ jobs:
         with:
           tag: ${{ github.event.release.tag_name }}
   build_and_upload:
+    if: contains(github.event.release.body,'autoRelease')
     strategy:
       matrix:
         target_beta:
@@ -27,11 +27,10 @@ jobs:
       - name: Build Release
         uses: blankochan/ShrimpleBuilder/build@master
         with:
+          rename: true
           active_dependencies: ${{matrix.target_beta}}
           constants: ${{matrix.target_beta}}
           configuration: "Release"
-      - name: Add configuration to final dll
-        run: rename 's/\.dll$/_${{matrix.target_beta}}.dll/' .build/*.dll
       - name: Upload to release
         uses: softprops/action-gh-release@v3
         with:
