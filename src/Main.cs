@@ -1,6 +1,6 @@
 ﻿using MelonLoader;
 
-[assembly: MelonInfo(typeof(ShrimpleNetworkingAPI.Main), BuildInfo.Name, BuildInfo.Version, BuildInfo.Author, BuildInfo.SourceURL)]
+[assembly: MelonInfo(typeof(ShrimpleNetworkingAPI.Main), ShrimpleNetworkingAPI.BuildInfo.Name, ShrimpleNetworkingAPI.BuildInfo.Version, ShrimpleNetworkingAPI.BuildInfo.Author, ShrimpleNetworkingAPI.BuildInfo.SourceURL)]
 [assembly: MelonColor(255, 255, 170, 238)]
 
 namespace ShrimpleNetworkingAPI;
