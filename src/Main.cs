@@ -10,6 +10,6 @@ public class Main : MelonMod
     public override void OnInitializeMelon()
     {
         Registration.TryRegister($"{BuildInfo.Author}.{BuildInfo.Name}", BuildInfo.Version, requiredForJoin: true);
-        LoggerInstance.Msg("loaded");
+        LoggerInstance.Msg("ShrimpleNetworkingAPI Loaded");
     }
 }

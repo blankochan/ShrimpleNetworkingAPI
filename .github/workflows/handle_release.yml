@@ -15,6 +15,11 @@ jobs:
         with:
           tag: ${{ github.event.release.tag_name }}
   build_and_upload:
+    strategy:
+      matrix:
+        target_beta:
+          - BETA_4
+          - BETA_5
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -22,7 +27,11 @@ jobs:
       - name: Build Release
         uses: blankochan/ShrimpleBuilder/build@master
         with:
+          active_dependencies: ${{matrix.target_beta}}
+          constants: ${{matrix.target_beta}}
           configuration: "Release"
+      - name: Add configuration to final dll
+        run: rename 's/\.dll$/_${{matrix.target_beta}}.dll/' .build/*.dll
       - name: Upload to release
         uses: softprops/action-gh-release@v3
         with:
